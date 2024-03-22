@@ -1,5 +1,6 @@
 use std::io;
 use std::process;
+
 struct Character {
     name: String,
     
@@ -9,7 +10,6 @@ struct Character {
     favor: i32,
     weapon: String,
 }
-
 impl Character {
     fn new(name: String, max_health: i32, weapon_skill: i32, favor: i32, weapon: String) -> Character {
         Character {
@@ -21,11 +21,57 @@ impl Character {
         }
     }
 }
-fn main() {
-    main_menu();
+struct GameState{
+    player: Character,
+}
+impl GameState{
+    fn new(player: Character) -> GameState {
+        GameState{
+            player,
+        }
+    } 
 }
 
-fn main_menu() {
+fn main() {
+    loop {
+        let game_state_option = main_menu();
+
+        if let Some(game_state) = game_state_option {
+            loop {
+                let mut menu_selection = String::new();
+        
+                print_player_information(&game_state.player);
+        
+                println!("1) Fight");
+                println!("2) Show Inventory");
+                println!("3) Shop");
+                println!("6) Quit");
+                
+                io::stdin()
+                    .read_line(&mut menu_selection)
+                    .expect("failed to get input");
+        
+                let menu_selection: u8 = menu_selection.trim().parse().expect("failed to parse");
+        
+                match menu_selection {
+                    1 => println!("1"),
+                    2 => println!("2"),
+                    6 => {
+                        println!("Exiting to main menu..");
+                        break;
+                    }
+                    _ => println!("other")
+                }
+            }
+        }
+    }
+}
+
+fn print_player_information(player: &Character) {
+    println!("Player Name: {}\nPlayer HP: {}", player.name, player.max_health);
+}
+
+fn main_menu() -> Option<GameState>{
     let mut menu_selection = String::new();
 
     println!("1) New Game");
@@ -39,20 +85,33 @@ fn main_menu() {
     let menu_selection: u8 = menu_selection.trim().parse().expect("failed to parse");
 
     match menu_selection {
-        1 => new_game(),
-        2 => println!("not inplemented"),
-        3 => {
-            println!("Quitting game..");
-            process::exit(0);
+        1 => {
+            let game_state = new_game();
+            return Some(game_state);
+        },
+        2 => {
+            println!("not inplemented");
+            None
         }
-        _ => println!("unknown selection {menu_selection}"),
+        3 => {
+            quit();
+            None
+        }
+        _ => {
+            println!("unknown selection {menu_selection}");
+            None
+        }
     }
 }
-fn new_game() {
-    let player = player_setup();
-    print_player(player);
-}
 
+fn new_game() -> GameState {
+    let game_state = GameState::new(player_setup());
+    game_state
+}
+fn quit(){
+    println!("Quitting game..");
+    process::exit(0);
+}
 fn player_setup() -> Character {
 
     let name = set_name();
@@ -75,11 +134,6 @@ fn player_setup() -> Character {
             return player;
         }
     }
-}
-
-fn print_player(player:Character){
-    println!("Player Name: {}\nPlayer HP: {} \nPlayer Skill: {} \nPlayer Favor: {} \nPlayer Weapon: {}"
-            , player.name, player.max_health, player.weapon_skill, player.favor, player.weapon);
 }
 
 fn set_background() -> String {
