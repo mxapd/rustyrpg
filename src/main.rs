@@ -42,9 +42,8 @@ fn main() {
         
                 print_player_information(&game_state.player);
         
-                println!("1) Fight");
-                println!("2) Show Inventory");
-                println!("3) Shop");
+                println!("1) Fight | 2) Status");
+                println!("3) Inventory | 4) Shop");
                 println!("6) Quit");
                 
                 io::stdin()
@@ -68,7 +67,92 @@ fn main() {
 }
 
 fn print_player_information(player: &Character) {
-    println!("Player Name: {}\nPlayer HP: {}", player.name, player.max_health);
+    println!(
+        "Player Information:\n\
+         ---------------------\n\
+         Name:    {}\n\
+         Favor:   {}\n\
+         HP:      {}\n\
+         Weapon:  {}\n\
+         Skill:   {}\n\
+         ----------------------",
+        player.name,
+        player.favor,
+        player.max_health,
+        player.weapon,
+        player.weapon_skill
+    );
+}
+
+fn player_setup() -> Character {
+
+    let name = set_name();
+    let background = set_background();
+    match background.as_ref() {
+        "Spearman" => {
+            let max_health = 100;
+            let weapon_skill = 10;
+            let favor = 500;
+            let weapon = "Spear".to_string();
+            let player = Character::new(name, max_health, weapon_skill, favor, weapon);
+            return player;
+        }
+        &_ => {
+            let max_health = 100;
+            let weapon_skill = 10;
+            let favor = 500;
+            let weapon = "Spear".to_string();
+            let player = Character::new(name, max_health, weapon_skill, favor, weapon);
+            return player;
+        }
+    }
+}
+fn set_background() -> String {
+    let mut menu_selection = String::new();
+    let mut background_chosen: bool = false; 
+    let mut player_background = String::new(); 
+
+    while !background_chosen {
+        println!("Choose your background:");
+        println!("1) Spearman");
+        
+        io::stdin()
+        .read_line(&mut menu_selection)
+        .expect("failed to selection");
+        match menu_selection.trim().parse::<u8>() {
+            Ok(num) => {
+                match num {
+                    1 => {
+                        player_background = String::from("Spearman");
+                        background_chosen = true;
+                    }
+                    _ => {
+                        player_background = String::from("Spearman");
+                        background_chosen = true;
+                    }
+                }
+            }
+            Err(_) => {
+                println!("Invalid input, please enter a number.")
+            }
+        }
+        menu_selection.clear();
+    }
+    player_background
+}
+fn set_name() -> String {
+    let mut name = String::new();
+    loop {
+        println!("What is your name?");
+        match io::stdin().read_line(&mut name){
+            Ok(_) => {
+                if !name.trim().is_empty(){
+                    break name.trim().to_string();
+                }
+            }
+            Err(_) => println!("Name cannot be empty."),
+        }
+    }
 }
 
 fn main_menu() -> Option<GameState>{
@@ -103,7 +187,6 @@ fn main_menu() -> Option<GameState>{
         }
     }
 }
-
 fn new_game() -> GameState {
     let game_state = GameState::new(player_setup());
     game_state
@@ -111,76 +194,4 @@ fn new_game() -> GameState {
 fn quit(){
     println!("Quitting game..");
     process::exit(0);
-}
-fn player_setup() -> Character {
-
-    let name = set_name();
-    let background = set_background();
-    match background.as_ref() {
-        "Spearman" => {
-            let max_health = 100;
-            let weapon_skill = 10;
-            let favor = 500;
-            let weapon = "Spear".to_string();
-            let player = Character::new(name, max_health, weapon_skill, favor, weapon);
-            return player;
-        }
-        &_ => {
-            let max_health = 100;
-            let weapon_skill = 10;
-            let favor = 500;
-            let weapon = "Spear".to_string();
-            let player = Character::new(name, max_health, weapon_skill, favor, weapon);
-            return player;
-        }
-    }
-}
-
-fn set_background() -> String {
-    let mut menu_selection = String::new();
-    let mut background_chosen: bool = false; 
-    let mut player_background = String::new(); 
-
-    while !background_chosen {
-        println!("Choose your background:");
-        println!("1) Spearman");
-        
-        io::stdin()
-        .read_line(&mut menu_selection)
-        .expect("failed to selection");
-        match menu_selection.trim().parse::<u8>() {
-            Ok(num) => {
-                match num {
-                    1 => {
-                        player_background = String::from("Spearman");
-                        background_chosen = true;
-                    }
-                    _ => {
-                        player_background = String::from("Spearman");
-                        background_chosen = true;
-                    }
-                }
-            }
-            Err(_) => {
-                println!("Invalid input, please enter a number.")
-            }
-        }
-        menu_selection.clear();
-    }
-    player_background
-}
-
-fn set_name() -> String {
-    let mut name = String::new();
-    loop {
-        println!("What is your name?");
-        match io::stdin().read_line(&mut name){
-            Ok(_) => {
-                if !name.trim().is_empty(){
-                    break name.trim().to_string();
-                }
-            }
-            Err(_) => println!("Name cannot be empty."),
-        }
-    }
 }
