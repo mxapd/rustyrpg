@@ -5,13 +5,13 @@ struct Character {
     name: String,
     
     max_health: i32,
-    weapon_skill: f32,
+    weapon_skill: f64,
     
     favor: i32,
     weapon: Weapon,
 }
 impl Character {
-    fn new(name: String, max_health: i32, weapon_skill: f32, favor: i32, weapon: Weapon) -> Character {
+    fn new(name: String, max_health: i32, weapon_skill: f64, favor: i32, weapon: Weapon) -> Character {
         Character {
             name,
             max_health,
@@ -21,7 +21,40 @@ impl Character {
         }
     }
     fn calc_damage(&self) -> u16{
-        let calc_damage = self.weapon.damage as f32 * self.weapon_skill;
+        let calc_damage = self.weapon.damage as f64 * self.weapon_skill;
+        calc_damage.round() as u16
+    }
+}
+struct Humanoid {
+    name: String,
+    
+    max_health: i32,
+    weapon_skill: f64,
+    
+    favor: i32,
+    weapon: Weapon,
+}
+impl Humanoid {
+    fn new(name: String, max_health: i32, weapon_skill: f64, favor: i32, weapon: Weapon) -> Humanoid {
+        Humanoid {
+            name,
+            max_health,
+            weapon_skill,
+            favor,
+            weapon,
+        }         
+    }
+    fn bandit() -> Humanoid {
+        Humanoid {
+            name : "Bandit".to_string(),
+            max_health: 100,
+            weapon_skill: 1.0,
+            favor: 15,
+            weapon: Weapon::spear()
+        }
+    }
+    fn calc_damage(&self) -> u16{
+        let calc_damage = self.weapon.damage as f64 * self.weapon_skill;
         calc_damage.round() as u16
     }
 }
@@ -71,7 +104,7 @@ fn main() {
                 let menu_selection: u8 = menu_selection.trim().parse().expect("failed to parse");
         
                 match menu_selection {
-                    1 => println!("{}",game_state.player.calc_damage()),
+                    1 => prefight(&game_state),
                     2 => println!("2"),
                     6 => {
                         println!("Exiting to main menu..");
@@ -171,6 +204,31 @@ fn set_name() -> String {
             Err(_) => println!("Name cannot be empty."),
         }
     }
+}
+
+fn prefight(game_state: &GameState){
+    let bandit = Humanoid::bandit();
+    fight(&game_state, &bandit);
+}
+fn fight(game_state: &GameState, enemy: &Humanoid){
+    print_fight_information(&game_state.player, &enemy);
+    io::stdin().read_line(&mut String::new()).expect("fail");
+}
+fn print_fight_information(player: &Character, enemy: &Humanoid){
+    println!(
+        "Player:        vs         Enemy:\n\
+         ----------------------------------------\n\
+         Name:    {:<16} {:<16}\n\
+         HP:      {:<16} {:<16}\n\
+         Weapon:  {:<16} {:<16}\n\
+         Skill:   {:<16.2} {:<16.2}\n\
+         ----------------------------------------",
+        player.name, enemy.name,
+        player.max_health.to_string(), enemy.max_health.to_string(),
+        player.weapon.name, enemy.weapon.name,
+        player.weapon_skill, enemy.weapon_skill
+    );
+    
 }
 
 fn main_menu() -> Option<GameState>{
