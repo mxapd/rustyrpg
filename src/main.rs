@@ -1,44 +1,50 @@
 use std::io;
 use std::process;
+use std::process::Command;
+use rand::Rng;
 
 struct Character {
     name: String,
     
-    max_health: i32,
+    max_health: u32,
+    health: u32,
     weapon_skill: f64,
     
     favor: i32,
     weapon: Weapon,
 }
 impl Character {
-    fn new(name: String, max_health: i32, weapon_skill: f64, favor: i32, weapon: Weapon) -> Character {
+    fn new(name: String, max_health: u32, weapon_skill: f64, favor: i32, weapon: Weapon) -> Character {
         Character {
             name,
             max_health,
+            health: max_health,
             weapon_skill,
             favor,
             weapon,
         }
     }
-    fn calc_damage(&self) -> u16{
+    fn calc_damage(&self) -> u32{
         let calc_damage = self.weapon.damage as f64 * self.weapon_skill;
-        calc_damage.round() as u16
+        calc_damage.round() as u32
     }
 }
 struct Humanoid {
     name: String,
     
-    max_health: i32,
+    max_health: u32,
+    health: u32,
     weapon_skill: f64,
     
     favor: i32,
     weapon: Weapon,
 }
 impl Humanoid {
-    fn new(name: String, max_health: i32, weapon_skill: f64, favor: i32, weapon: Weapon) -> Humanoid {
+    fn new(name: String, max_health: u32, weapon_skill: f64, favor: i32, weapon: Weapon) -> Humanoid {
         Humanoid {
             name,
             max_health,
+            health: max_health,
             weapon_skill,
             favor,
             weapon,
@@ -48,14 +54,15 @@ impl Humanoid {
         Humanoid {
             name : "Bandit".to_string(),
             max_health: 100,
+            health: 100,
             weapon_skill: 1.0,
             favor: 15,
             weapon: Weapon::spear()
         }
     }
-    fn calc_damage(&self) -> u16{
+    fn calc_damage(&self) -> u32{
         let calc_damage = self.weapon.damage as f64 * self.weapon_skill;
-        calc_damage.round() as u16
+        calc_damage.round() as u32
     }
 }
 struct GameState{
@@ -87,7 +94,7 @@ fn main() {
     loop {
         let game_state_option = main_menu();
 
-        if let Some(game_state) = game_state_option {
+        if let Some(mut game_state) = game_state_option {
             loop {
                 let mut menu_selection = String::new();
         
@@ -104,7 +111,7 @@ fn main() {
                 let menu_selection: u8 = menu_selection.trim().parse().expect("failed to parse");
         
                 match menu_selection {
-                    1 => prefight(&game_state),
+                    1 => prefight(&mut game_state),
                     2 => println!("2"),
                     6 => {
                         println!("Exiting to main menu..");
@@ -206,13 +213,22 @@ fn set_name() -> String {
     }
 }
 
-fn prefight(game_state: &GameState){
-    let bandit = Humanoid::bandit();
-    fight(&game_state, &bandit);
+fn prefight(game_state: &mut GameState){
+    let mut bandit = Humanoid::bandit();
+    fight(game_state, &mut bandit);
 }
-fn fight(game_state: &GameState, enemy: &Humanoid){
+fn fight(game_state: &mut GameState, enemy: &mut Humanoid){
     print_fight_information(&game_state.player, &enemy);
-    io::stdin().read_line(&mut String::new()).expect("fail");
+    println!("1) Attack");
+    let mut selection_string = String::new();
+    io::stdin().read_line(&mut selection_string).expect("Failed to read line");
+    let selection: u8 = selection_string.trim().parse().expect("Error parsing selection");
+    match selection {
+        1 => {
+            attack(&mut game_state.player, enemy);
+        }
+        _ => todo!(),
+    }
 }
 fn print_fight_information(player: &Character, enemy: &Humanoid){
     println!(
@@ -224,7 +240,7 @@ fn print_fight_information(player: &Character, enemy: &Humanoid){
          Skill:   {:<16.2} {:<16.2}\n\
          ----------------------------------------",
         player.name, enemy.name,
-        player.max_health.to_string(), enemy.max_health.to_string(),
+        player.health.to_string(), enemy.health.to_string(),
         player.weapon.name, enemy.weapon.name,
         player.weapon_skill, enemy.weapon_skill
     );
@@ -270,10 +286,44 @@ fn main_menu() -> Option<GameState>{
     }
 }
 fn new_game() -> GameState {
+    clear_console();
     let game_state = GameState::new(player_setup());
     game_state
 }
 fn quit(){
     println!("Quitting game..");
     process::exit(0);
+}
+
+fn clear_console() {
+    if cfg!(target_os = "windows") {
+        Command::new("cmd")
+                .args(&["/C", "cls"])
+                .status()
+                .unwrap();
+    } else {
+        Command::new("clear")
+                .status()
+                .unwrap();
+    }
+}
+
+fn attack(character: &mut Character, enemy: &mut Humanoid){
+    let player_attack = rand::thread_rng().gen_range((character.calc_damage() / 2)..=character.calc_damage());
+    let enemy_attack = rand::thread_rng().gen_range((enemy.calc_damage() / 2)..=enemy.calc_damage());
+
+    println!("You hit {} for {} damage", enemy.name, player_attack);
+
+    if player_attack > enemy.health {
+        enemy.health = 0;
+    }
+    else {
+        enemy.health -= player_attack;
+    }
+
+    if enemy.health == 0 {
+        println!("{} is defeated!", enemy.name);
+    } else {
+        println!("{} now has {} health left.", enemy.name, enemy.health);
+    }
 }
