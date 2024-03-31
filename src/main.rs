@@ -14,7 +14,7 @@ use std::process;
 use character::Character;
 use enemy::Enemy;
 use game_state::GameState;
-use utility::player_setup;
+use utility::{player_setup, print_slowly, wait_for_input};
 
 fn main() {
     loop {
@@ -24,7 +24,7 @@ fn main() {
             loop {
                 utility::clear_console();
                 
-                let mut file_contents = match fs::read_to_string("story/intro.txt"){
+                let mut file_contents = match fs::read_to_string("story/intro1.txt"){
                     Ok(contents) => contents,
                     Err(e) => {
                         eprintln!("Error reading file: {}", e);
@@ -49,68 +49,79 @@ fn main() {
                         .expect("failed to get input");
                 }
 
+                let mut branch_aquired = false;
                 let mut torch_aquired = false;
                 let mut tree_found = false;
-                while  torch_aquired == false{
-                    
+
+                while !torch_aquired{
                     print_slowly("What will you do?\n");
                     print_slowly("[1] Inspect your supplies\n");
                     print_slowly("[2] Feel around\n");
                     print_slowly("[3] Go blindly forwards\n");
                     
                     let mut input: String = String::new();
-                    io::stdin()
-                    .read_line(&mut input)
-                    .expect("failed to get input");
+                    io::stdin().read_line(&mut input).expect("failed to get input");
                 
-                    let input: u32 = input.trim().parse().expect("error");
+                    let input = input.trim().parse::<u32>();
 
                     match input {
-                        1 => {
-                            print_slowly("Though darkness envelops the surroundings, your experience as a seasoned soldier and survivalist offers a glimmer of hope. Among your supplies lie tinder and flint, essential tools for igniting a fire. Yet, sparking the tinder without any firewood would be a futile endeavor\n\n");
-                            wait_for_input();
-                        }
-                        2 => {
-                            if tree_found {
-                                print_slowly("You fumble along the rugged terrain, searching for anything of use, and find a large branch perfect as firewood or a makeshift torch.\n\n");
-                                wait_for_input();   
-                                torch_aquired = true;
-                            }
-                            else {
-                                print_slowly("You fumble along the rugged terrain, searching for anything of use, but your efforts yeild naught; only dust and stones meet your touch.\n\n");
+                        Ok(choice) => match choice {
+                            1 => {
+                                print_slowly("Though darkness envelops the surroundings, your experience as a seasoned soldier and survivalist offers a glimmer of hope. Among your supplies lie tinder and flint, essential tools for igniting a fire. Yet, sparking the tinder without any firewood would be a futile endeavor.\n\n");
                                 wait_for_input();
                             }
-                        }
-                        3 => {
-                            print_slowly("You cautiously inch forward in the darkness, methodically exploring your surroundings with each movement. Desperately seeking something to guide your path.\n");
-                            print_slowly("...\n");
-                            print_slowly("After a few minutes, your hands meet some large object. As you touch it and feel what it might be, a subtle recognition dawns upon you. The rough texture beneath your fingertips, the sturdy yet yielding presence—it's unmistakably a tree.\n\n");
-                            wait_for_input(); 
-                            tree_found = true;
-                        }
-                        _ => todo!(),
+                            2 => {
+                                if tree_found {
+                                    print_slowly("You fumble along rugged terrain, searching for anything of use, and find a large branch perfect as firewood or a makeshift torch.\n\n");
+                                    wait_for_input();   
+                                    branch_aquired = true;
+                                }
+                                else {
+                                    print_slowly("You fumble along the wet, rugged terrain, searching for anything of use, but your efforts yeild naught; only moss and wet slime meet your touch.\n\n");
+                                    wait_for_input();
+                                }
+                            }
+                            3 => {
+                                print_slowly("You cautiously inch forward in the darkness, methodically exploring your surroundings with each movement. Desperately seeking something to guide your path.\n");
+                                print_slowly("...\n");
+                                print_slowly("As you go the dampness gradually gives way to a drier, firmer terrain, and after a few minutes, your hands meet some kind of large object. As you touch it and feel what it might be, a subtle recognition dawns upon you. The rough texture beneath your fingertips, the sturdy yet yielding presence—it's unmistakably a tree.\n\n");
+                                wait_for_input(); 
+                                tree_found = true;
+                            }
+                            _ => todo!(),
+                        },
+                        Err(_) => println!("Invalid input. Please enter a number."),
                     }
+                    if branch_aquired {
+                        print_slowly("You tear a strip of fabric from your cloak and bind it around the branch before igniting it.\n\n");
+                        torch_aquired = true;
+                    }
+                } 
 
-                }                
+                let mut file_contents = match fs::read_to_string("story/intro2.txt"){
+                    Ok(contents) => contents,
+                    Err(e) => {
+                        eprintln!("Error reading file: {}", e);
+                        return;
+                    } 
+                };
+
+                let paragraphs: Vec<&str> = file_contents.split("\n\n").collect(); 
+                
+                for paragraph in paragraphs {
+                    print_slowly(paragraph);
+                    println!("");
+                    let mut input = String::new();
+                    io::stdin()
+                        .read_line(&mut input)
+                        .expect("failed to get input");
+                }
             }
 
         }
     }
 }
-fn print_slowly(text: &str) {
-    let delay_ms = 0;
-    for c in text.chars() {
-        print!("{}", c);
-        std::io::stdout().flush().expect("Failed to flush stdout");
-        thread::sleep(Duration::from_millis(delay_ms));
-    }
-}
-fn wait_for_input(){
-    let mut input = String::new();
-    io::stdin()
-    .read_line(&mut input)
-    .expect("failed to get input");
-}
+
 fn main_menu() -> Option<GameState>{
     let mut menu_selection = String::new();
     println!(r"

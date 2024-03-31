@@ -2,7 +2,7 @@ use crate::items::Weapon;
 
 pub struct Character {
     pub name: String,
-    
+
     pub max_health: u32,
     pub health: u32,
     pub weapon_skill: f64,
@@ -13,7 +13,14 @@ pub struct Character {
 }
 
 impl Character {
-    pub fn new(name: String, max_health: u32, weapon_skill: f64, evasion: u32, favor: i32, weapon: Weapon) -> Character {
+    pub fn new(
+        name: String,
+        max_health: u32,
+        weapon_skill: f64,
+        evasion: u32,
+        favor: i32,
+        weapon: Weapon,
+    ) -> Character {
         Character {
             name,
             max_health,

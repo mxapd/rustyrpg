@@ -1,7 +1,9 @@
-use std::io;
-use std::process::Command;
 use crate::character::Character;
 use crate::items::Weapon;
+use std::time::Duration;
+use std::{io, thread};
+use std::process::Command;
+use std::io::Write;
 
 pub fn print_player_information(player: &Character) {
     println!(
@@ -13,11 +15,7 @@ pub fn print_player_information(player: &Character) {
          Weapon:  {}\n\
          Skill:   {}\n\
          ----------------------",
-        player.name,
-        player.favor,
-        player.max_health,
-        player.weapon.name,
-        player.weapon_skill
+        player.name, player.favor, player.max_health, player.weapon.name, player.weapon_skill
     );
 }
 
@@ -56,34 +54,32 @@ pub fn player_setup() -> Character {
 }
 pub fn set_background() -> String {
     let mut menu_selection = String::new();
-    let mut background_chosen: bool = false; 
-    let mut player_background = String::new(); 
+    let mut background_chosen: bool = false;
+    let mut player_background = String::new();
 
     while !background_chosen {
         println!("Choose your background:");
         println!("1) Spearman");
         println!("2) Swordsman");
-        
+
         io::stdin()
-        .read_line(&mut menu_selection)
-        .expect("failed to selection");
+            .read_line(&mut menu_selection)
+            .expect("failed to selection");
         match menu_selection.trim().parse::<u8>() {
-            Ok(num) => {
-                match num {
-                    1 => {
-                        player_background = String::from("Spearman");
-                        background_chosen = true;
-                    }
-                    2 => {
-                        player_background = String::from("Swordsman");
-                        background_chosen = true;
-                    }
-                    _ => {
-                        player_background = String::from("Spearman");
-                        background_chosen = true;
-                    }
+            Ok(num) => match num {
+                1 => {
+                    player_background = String::from("Spearman");
+                    background_chosen = true;
                 }
-            }
+                2 => {
+                    player_background = String::from("Swordsman");
+                    background_chosen = true;
+                }
+                _ => {
+                    player_background = String::from("Spearman");
+                    background_chosen = true;
+                }
+            },
             Err(_) => {
                 println!("Invalid input, please enter a number.")
             }
@@ -96,9 +92,9 @@ pub fn set_name() -> String {
     let mut name = String::new();
     loop {
         println!("What is your name?");
-        match io::stdin().read_line(&mut name){
+        match io::stdin().read_line(&mut name) {
             Ok(_) => {
-                if !name.trim().is_empty(){
+                if !name.trim().is_empty() {
                     break name.trim().to_string();
                 }
             }
@@ -108,13 +104,22 @@ pub fn set_name() -> String {
 }
 pub fn clear_console() {
     if cfg!(target_os = "windows") {
-        Command::new("cmd")
-                .args(&["/C", "cls"])
-                .status()
-                .unwrap();
+        Command::new("cmd").args(&["/C", "cls"]).status().unwrap();
     } else {
-        Command::new("clear")
-                .status()
-                .unwrap();
+        Command::new("clear").status().unwrap();
     }
+}
+pub fn print_slowly(text: &str) {
+    let delay_ms = 0;
+    for c in text.chars() {
+        print!("{}", c);
+        std::io::stdout().flush().expect("Failed to flush stdout");
+        thread::sleep(Duration::from_millis(delay_ms));
+    }
+}
+pub fn wait_for_input(){
+    let mut input = String::new();
+    io::stdin()
+    .read_line(&mut input)
+    .expect("failed to get input");
 }
