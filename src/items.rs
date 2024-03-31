@@ -11,6 +11,13 @@ impl Weapon{
             damage: 10,
         }
     }
+    pub fn sword() -> Weapon {
+        Weapon {
+            name : "Longsword".to_string(),
+            description: "An elaborate longsword.".to_string(),
+            damage: 15,
+        }
+    }
 }
 
 // item enum, 

@@ -34,6 +34,15 @@ pub fn player_setup() -> Character {
             let player = Character::new(name, max_health, weapon_skill, evasion, favor, weapon);
             return player;
         }
+        "Swordsman" => {
+            let max_health = 100;
+            let weapon_skill = 1.5;
+            let favor = 500;
+            let weapon = Weapon::sword();
+            let evasion = 50;
+            let player = Character::new(name, max_health, weapon_skill, evasion, favor, weapon);
+            return player;
+        }
         &_ => {
             let max_health = 100;
             let weapon_skill = 1.5;
@@ -53,6 +62,7 @@ pub fn set_background() -> String {
     while !background_chosen {
         println!("Choose your background:");
         println!("1) Spearman");
+        println!("2) Swordsman");
         
         io::stdin()
         .read_line(&mut menu_selection)
@@ -62,6 +72,10 @@ pub fn set_background() -> String {
                 match num {
                     1 => {
                         player_background = String::from("Spearman");
+                        background_chosen = true;
+                    }
+                    2 => {
+                        player_background = String::from("Swordsman");
                         background_chosen = true;
                     }
                     _ => {
