@@ -5,6 +5,7 @@ mod combat;
 mod game_state;
 mod utility;
 
+use std::fs;
 use std::io;
 use std::process;
 use character::Character;
@@ -19,33 +20,7 @@ fn main() {
         if let Some(mut game_state) = game_state_option {
             loop {
                 utility::clear_console();
-
-                let mut menu_selection = String::new();
-
-                println!("1) Fight | 2) Status");
-                println!("3) Inventory | 4) Shop");
-                println!("6) Quit");
                 
-                io::stdin()
-                    .read_line(&mut menu_selection)
-                    .expect("failed to get input");
-        
-                let menu_selection: u8 = menu_selection.trim().parse().expect("failed to parse");
-        
-                match menu_selection {
-                    1 => {
-                        utility::clear_console();
-                        combat::prefight(&mut game_state.player)
-                    },
-                    2 => {
-                        print_player_information(&game_state.player);
-                    }
-                    6 => {
-                        println!("Exiting to main menu..");
-                        break;
-                    }
-                    _ => println!("other")
-                }
             }
         }
     }

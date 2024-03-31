@@ -12,3 +12,7 @@ impl Weapon{
         }
     }
 }
+
+// item enum, 
+// bandages, healing cream?, 
+// inventory struct
