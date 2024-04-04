@@ -154,15 +154,10 @@ fn print_intro(game_state:&GameState){
 fn main_menu() -> Option<GameState>{
     let mut menu_selection = String::new();
     println!(r"
-     _ __ _   _ ___| |_ _   _   _ __ _ __   __ _ 
-    | '__| | | / __| __| | | | | '__| '_ \ / _` |
-    | |  | |_| \__ \ |_| |_| | | |  | |_) | (_| |
-    |_|   \__,_|___/\__|\__, | |_|  | .__/ \__, |
-                        |___/       |_|    |___/ 
-    _____________________________________________");
-    println!("   |1. New Game");
-    println!("   |2. Load Game");
-    println!("   |3. Quit");
+    ( |-| ~|~ |-| () |\| | /\ |\|   ( |-| /? () |\| | ( |_ [-                                                                                                                                                                                                                                                                                           ");
+    println!("   1. New Game");
+    println!("   2. Load Game");
+    println!("   3. Quit");
 
     io::stdin()
         .read_line(&mut menu_selection)
