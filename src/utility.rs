@@ -1,5 +1,5 @@
-use crate::character::Character;
-use crate::items::Weapon;
+use crate::character::{Background, Character};
+use crate::items::{Weapon, Inventory};
 use std::time::Duration;
 use std::{io, thread};
 use std::process::Command;
@@ -22,32 +22,36 @@ pub fn print_player_information(player: &Character) {
 pub fn player_setup() -> Character {
     let name = set_name();
     let background = set_background();
+    let inventory = Inventory::new(10);
     match background.as_ref() {
         "Spearman" => {
+            let background= Background::Spearman;
             let max_health = 100;
             let weapon_skill = 1.5;
             let favor = 500;
-            let weapon = Weapon::spear();
+            let weapon = Weapon::dagger();
             let evasion = 50;
-            let player = Character::new(name, max_health, weapon_skill, evasion, favor, weapon);
+            let player = Character::new(name, background, max_health, weapon_skill, evasion, favor, weapon, inventory);
             return player;
         }
         "Swordsman" => {
+            let background= Background::Swordsman;
             let max_health = 100;
             let weapon_skill = 1.5;
             let favor = 500;
-            let weapon = Weapon::sword();
+            let weapon = Weapon::dagger();
             let evasion = 50;
-            let player = Character::new(name, max_health, weapon_skill, evasion, favor, weapon);
+            let player = Character::new(name, background, max_health, weapon_skill, evasion, favor, weapon, inventory);
             return player;
         }
         &_ => {
+            let background= Background::Spearman;
             let max_health = 100;
             let weapon_skill = 1.5;
             let favor = 500;
-            let weapon = Weapon::spear();
+            let weapon = Weapon::dagger();
             let evasion = 50;
-            let player = Character::new(name, max_health, weapon_skill, evasion, favor, weapon);
+            let player = Character::new(name, background, max_health, weapon_skill, evasion, favor, weapon, inventory);
             return player;
         }
     }

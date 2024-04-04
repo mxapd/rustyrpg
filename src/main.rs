@@ -5,9 +5,6 @@ mod combat;
 mod game_state;
 mod utility;
 
-use std::time::Duration;
-use std::io::Write;
-use std::thread;
 use std::fs;
 use std::io;
 use std::process;
@@ -24,30 +21,7 @@ fn main() {
             loop {
                 utility::clear_console();
                 
-                let mut file_contents = match fs::read_to_string("story/intro1.txt"){
-                    Ok(contents) => contents,
-                    Err(e) => {
-                        eprintln!("Error reading file: {}", e);
-                        return;
-                    } 
-                };
-
-                file_contents = match &game_state.player.weapon.name[..] {
-                    "Sword" => file_contents.replace("sword", "sword"), // Modify based on the player's weapon name
-                    "Spear" => file_contents.replace("sword", "spear"), // Modify based on the player's weapon name
-                    _ => file_contents,
-                };
-
-                let paragraphs: Vec<&str> = file_contents.split("\n\n").collect(); 
-                
-                for paragraph in paragraphs {
-                    print_slowly(paragraph);
-                    println!("");
-                    let mut input = String::new();
-                    io::stdin()
-                        .read_line(&mut input)
-                        .expect("failed to get input");
-                }
+                print_intro(&game_state);
 
                 let mut branch_aquired = false;
                 let mut torch_aquired = false;
@@ -98,7 +72,7 @@ fn main() {
                     }
                 } 
 
-                let mut file_contents = match fs::read_to_string("story/intro2.txt"){
+                let file_contents = match fs::read_to_string("story/intro2.txt"){
                     Ok(contents) => contents,
                     Err(e) => {
                         eprintln!("Error reading file: {}", e);
@@ -116,9 +90,64 @@ fn main() {
                         .read_line(&mut input)
                         .expect("failed to get input");
                 }
-            }
+                print_slowly("What will you do?\n");
+                print_slowly("[1] Aproach the camp carefully, taking care to not be noticed. You dont know what awaits ahead.\n");
+                print_slowly("[2] Rush in to see if any of your friends are still alive.\n");
+                print_slowly("[3] Look around for additional options\n");
 
+                let mut input: String = String::new();
+                io::stdin().read_line(&mut input).expect("failed to get input");
+            
+                let input = input.trim().parse::<u32>();
+
+                match input {
+                    Ok(choice) => match choice {
+                        1 => {
+                            print_slowly("As you carefully aproach the camp you can see a couple of four-legged beasts, their height is slightly below your shoulders, its too dark to tell what they are.");
+                            print_slowly("They seem to be busy eating.. ");
+                            print_slowly(".. eating the corpses of what must be your fallen brothers-in-arms.");
+
+                        }
+                        2 => {
+                            print_slowly("Even if the chances that the sounds are from any of your fallen friends are low, you dont wait around and run in to see if what you hope is true.");
+                            print_slowly("As you run in, you see some kind of four-legged beast charging towards you. Better get ready to fight.");
+                        }
+                        3 => {
+                            print_slowly("You look around for anything of use, but find nothing but sticks and stones..");
+                        }
+                        _ => todo!(),
+                    },
+                    Err(_) => println!("Invalid input. Please enter a number."),
+                }
+            }   
         }
+    }
+}
+
+fn print_intro(game_state:&GameState){
+    let mut file_contents = match fs::read_to_string("story/intro1.txt"){
+        Ok(contents) => contents,
+        Err(e) => {
+            eprintln!("Error reading file: {}", e);
+            return;
+        } 
+    };
+
+    file_contents = match &game_state.player.background {
+        character::Background::Swordsman => file_contents.replace("sword", "sword"), // Modify based on the player's weapon name
+        character::Background::Spearman => file_contents.replace("sword", "spear"), // Modify based on the player's weapon name
+        _ => file_contents,
+    };
+
+    let paragraphs: Vec<&str> = file_contents.split("\n\n").collect(); 
+    
+    for paragraph in paragraphs {
+        print_slowly(paragraph);
+        println!("");
+        let mut input = String::new();
+        io::stdin()
+            .read_line(&mut input)
+            .expect("failed to get input");
     }
 }
 
