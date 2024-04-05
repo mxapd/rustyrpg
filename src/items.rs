@@ -1,5 +1,5 @@
 #[derive(Clone)]
-pub enum Item{
+pub enum Item {
     Weapon(Weapon),
 }
 #[derive(Clone)]
@@ -24,9 +24,11 @@ impl Weapon {
         }
     }
     pub fn dagger() -> Weapon {
-        Weapon{
+        Weapon {
             name: "Dagger".to_string(),
-            description: "A sturdy dagger, useful for many things but not a very effective in combat.".to_string(),
+            description:
+                "A sturdy dagger, useful for many things but not a very effective in combat."
+                    .to_string(),
             damage: 5,
         }
     }

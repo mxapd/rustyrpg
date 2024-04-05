@@ -1,6 +1,6 @@
-use crate::items::{Weapon, Inventory};
+use crate::items::{Inventory, Weapon};
 
-pub enum Background{
+pub enum Background {
     Swordsman,
     Spearman,
 }
@@ -16,7 +16,6 @@ pub struct Character {
     pub favor: i32,
     pub weapon: Weapon,
     pub inventory: Inventory,
-
 }
 
 impl Character {

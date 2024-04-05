@@ -1,16 +1,16 @@
 mod character;
-mod enemy;
-mod items;
 mod combat;
+mod enemy;
 mod game_state;
+mod items;
 mod utility;
 
-use std::fs;
-use std::io;
-use std::process;
 use character::Character;
 use enemy::Enemy;
 use game_state::GameState;
+use std::fs;
+use std::io;
+use std::process;
 use utility::{player_setup, print_slowly, wait_for_input};
 
 fn main() {
@@ -20,22 +20,24 @@ fn main() {
         if let Some(mut game_state) = game_state_option {
             loop {
                 utility::clear_console();
-                
+
                 print_intro(&game_state);
 
                 let mut branch_aquired = false;
                 let mut torch_aquired = false;
                 let mut tree_found = false;
 
-                while !torch_aquired{
+                while !torch_aquired {
                     print_slowly("What will you do?\n");
                     print_slowly("[1] Inspect your supplies\n");
                     print_slowly("[2] Feel around\n");
                     print_slowly("[3] Go blindly forwards\n");
-                    
+
                     let mut input: String = String::new();
-                    io::stdin().read_line(&mut input).expect("failed to get input");
-                
+                    io::stdin()
+                        .read_line(&mut input)
+                        .expect("failed to get input");
+
                     let input = input.trim().parse::<u32>();
 
                     match input {
@@ -47,10 +49,9 @@ fn main() {
                             2 => {
                                 if tree_found {
                                     print_slowly("You fumble along rugged terrain, searching for anything of use, and find a large branch perfect as firewood or a makeshift torch.\n\n");
-                                    wait_for_input();   
+                                    wait_for_input();
                                     branch_aquired = true;
-                                }
-                                else {
+                                } else {
                                     print_slowly("You fumble along the wet, rugged terrain, searching for anything of use, but your efforts yeild naught; only moss and wet slime meet your touch.\n\n");
                                     wait_for_input();
                                 }
@@ -59,7 +60,7 @@ fn main() {
                                 print_slowly("You cautiously inch forward in the darkness, methodically exploring your surroundings with each movement. Desperately seeking something to guide your path.\n");
                                 print_slowly("...\n");
                                 print_slowly("As you go the dampness gradually gives way to a drier, firmer terrain, and after a few minutes, your hands meet some kind of large object. As you touch it and feel what it might be, a subtle recognition dawns upon you. The rough texture beneath your fingertips, the sturdy yet yielding presence—it's unmistakably a tree.\n\n");
-                                wait_for_input(); 
+                                wait_for_input();
                                 tree_found = true;
                             }
                             _ => todo!(),
@@ -70,18 +71,18 @@ fn main() {
                         print_slowly("You tear a strip of fabric from your cloak and bind it around the branch before igniting it.\n\n");
                         torch_aquired = true;
                     }
-                } 
+                }
 
-                let file_contents = match fs::read_to_string("story/intro2.txt"){
+                let file_contents = match fs::read_to_string("story/intro2.txt") {
                     Ok(contents) => contents,
                     Err(e) => {
                         eprintln!("Error reading file: {}", e);
                         return;
-                    } 
+                    }
                 };
 
-                let paragraphs: Vec<&str> = file_contents.split("\n\n").collect(); 
-                
+                let paragraphs: Vec<&str> = file_contents.split("\n\n").collect();
+
                 for paragraph in paragraphs {
                     print_slowly(paragraph);
                     println!("");
@@ -96,21 +97,50 @@ fn main() {
                 print_slowly("[3] Look around for additional options\n");
 
                 let mut input: String = String::new();
-                io::stdin().read_line(&mut input).expect("failed to get input");
-            
+                io::stdin()
+                    .read_line(&mut input)
+                    .expect("failed to get input");
+
                 let input = input.trim().parse::<u32>();
 
                 match input {
                     Ok(choice) => match choice {
                         1 => {
-                            print_slowly("As you carefully aproach the camp you can see a couple of four-legged beasts, their height is slightly below your shoulders, its too dark to tell what they are.");
-                            print_slowly("They seem to be busy eating.. ");
-                            print_slowly(".. eating the corpses of what must be your fallen brothers-in-arms.");
-
+                            print_slowly("As you cautiously approach the camp, the dim light reveals the outlines of two quadrupedal creatures, their size nearly matching your own. However, the darkness veils any additional features from sight.\n");
+                            print_slowly("Their attention seems wholly consumed by the macabre endeavor - feasting upon the corpses of your fallen brothers-in-arms.\n");
                         }
                         2 => {
-                            print_slowly("Even if the chances that the sounds are from any of your fallen friends are low, you dont wait around and run in to see if what you hope is true.");
-                            print_slowly("As you run in, you see some kind of four-legged beast charging towards you. Better get ready to fight.");
+                            print_slowly("Although the likelihood that the sounds emanate from any of your fallen comrades is slim, you waste no time hesitating. With a sense of urgency, you rush forward, desperate to confirm your hopeful suspicions.\n");
+                            print_slowly("As you charge forward, your ears are assaulted by a deafening screech, so piercing that it momentarily paralyzes you, forcing you to halt and shield your ears in agony.\n");
+                            print_slowly("As the ringing subsides and you begin to regain your senses, you scan the surroundings for the source of the chilling noise. What you see next sends a shiver down your spine - the shadows writhe and contort, seemingly alive with movement.\n");
+                            print_slowly("As your hearing gradually returns, the ground beneath you trembles with the unmistakable sound of a thousand thunderous footsteps, closing in on you with terrifying speed.\n");
+                            print_slowly("The air grows thick with anticipation as the horde of unseen beasts draws closer, their hostile intent unmistakable and their numbers seemingly endless\n");
+                            print_slowly("In the face of this overwhelming threat, you must make a swift decision. Will you stand your ground and prepare to face whatever horrors approach, or will you turn and flee, hoping to outrun the impending danger?\n\n");
+
+                            print_slowly("[1] Hold your ground and ready yourself for battle.\n");
+                            print_slowly("[2] Run for your life.\n");
+
+                            let mut input: String = String::new();
+                            io::stdin()
+                                .read_line(&mut input)
+                                .expect("failed to get input");
+
+                            let input = input.trim().parse::<u32>();
+
+                            match input {
+                                Ok(choice) => match choice {
+                                    1 => {
+                                        println!(" not yet written");
+                                    }
+                                    2 => {
+                                        println!(" not yet written");
+                                    }
+                                    _ => {
+                                        println!("error");
+                                    }
+                                },
+                                Err(_) => println!("error parsing"),
+                            }
                         }
                         3 => {
                             print_slowly("You look around for anything of use, but find nothing but sticks and stones..");
@@ -119,18 +149,18 @@ fn main() {
                     },
                     Err(_) => println!("Invalid input. Please enter a number."),
                 }
-            }   
+            }
         }
     }
 }
 
-fn print_intro(game_state:&GameState){
-    let mut file_contents = match fs::read_to_string("story/intro1.txt"){
+fn print_intro(game_state: &GameState) {
+    let mut file_contents = match fs::read_to_string("story/intro1.txt") {
         Ok(contents) => contents,
         Err(e) => {
             eprintln!("Error reading file: {}", e);
             return;
-        } 
+        }
     };
 
     file_contents = match &game_state.player.background {
@@ -139,8 +169,8 @@ fn print_intro(game_state:&GameState){
         _ => file_contents,
     };
 
-    let paragraphs: Vec<&str> = file_contents.split("\n\n").collect(); 
-    
+    let paragraphs: Vec<&str> = file_contents.split("\n\n").collect();
+
     for paragraph in paragraphs {
         print_slowly(paragraph);
         println!("");
@@ -151,10 +181,12 @@ fn print_intro(game_state:&GameState){
     }
 }
 
-fn main_menu() -> Option<GameState>{
+fn main_menu() -> Option<GameState> {
     let mut menu_selection = String::new();
-    println!(r"
-    ( |-| ~|~ |-| () |\| | /\ |\|   ( |-| /? () |\| | ( |_ [-                                                                                                                                                                                                                                                                                           ");
+    println!(
+        r"
+    ( |-| ~|~ |-| () |\| | /\ |\|   ( |-| /? () |\| | ( |_ [-                                                                                                                                                                                                                                                                                           "
+    );
     println!("   1. New Game");
     println!("   2. Load Game");
     println!("   3. Quit");
@@ -169,7 +201,7 @@ fn main_menu() -> Option<GameState>{
         1 => {
             let game_state = new_game();
             return Some(game_state);
-        },
+        }
         2 => {
             println!("not inplemented");
             None
@@ -190,7 +222,7 @@ fn new_game() -> GameState {
     let mut game_state = GameState::new(player);
     game_state
 }
-fn quit(){
+fn quit() {
     println!("Quitting game..");
     process::exit(0);
 }

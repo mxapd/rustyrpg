@@ -13,8 +13,8 @@ pub trait Combatant {
 
 impl Combatant for Character {
     fn calc_damage(&self) -> u32 {
-         (self.weapon.damage as f64 * self.weapon_skill).round() as u32
-   }
+        (self.weapon.damage as f64 * self.weapon_skill).round() as u32
+    }
 
     fn take_damage(&mut self, damage: u32) {
         if damage > self.health {

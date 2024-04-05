@@ -1,9 +1,9 @@
 use crate::character::{Background, Character};
-use crate::items::{Weapon, Inventory};
+use crate::items::{Inventory, Weapon};
+use std::io::Write;
+use std::process::Command;
 use std::time::Duration;
 use std::{io, thread};
-use std::process::Command;
-use std::io::Write;
 
 pub fn print_player_information(player: &Character) {
     println!(
@@ -25,33 +25,60 @@ pub fn player_setup() -> Character {
     let inventory = Inventory::new(10);
     match background.as_ref() {
         "Spearman" => {
-            let background= Background::Spearman;
+            let background = Background::Spearman;
             let max_health = 100;
             let weapon_skill = 1.5;
             let favor = 500;
             let weapon = Weapon::dagger();
             let evasion = 50;
-            let player = Character::new(name, background, max_health, weapon_skill, evasion, favor, weapon, inventory);
+            let player = Character::new(
+                name,
+                background,
+                max_health,
+                weapon_skill,
+                evasion,
+                favor,
+                weapon,
+                inventory,
+            );
             return player;
         }
         "Swordsman" => {
-            let background= Background::Swordsman;
+            let background = Background::Swordsman;
             let max_health = 100;
             let weapon_skill = 1.5;
             let favor = 500;
             let weapon = Weapon::dagger();
             let evasion = 50;
-            let player = Character::new(name, background, max_health, weapon_skill, evasion, favor, weapon, inventory);
+            let player = Character::new(
+                name,
+                background,
+                max_health,
+                weapon_skill,
+                evasion,
+                favor,
+                weapon,
+                inventory,
+            );
             return player;
         }
         &_ => {
-            let background= Background::Spearman;
+            let background = Background::Spearman;
             let max_health = 100;
             let weapon_skill = 1.5;
             let favor = 500;
             let weapon = Weapon::dagger();
             let evasion = 50;
-            let player = Character::new(name, background, max_health, weapon_skill, evasion, favor, weapon, inventory);
+            let player = Character::new(
+                name,
+                background,
+                max_health,
+                weapon_skill,
+                evasion,
+                favor,
+                weapon,
+                inventory,
+            );
             return player;
         }
     }
@@ -121,9 +148,9 @@ pub fn print_slowly(text: &str) {
         thread::sleep(Duration::from_millis(delay_ms));
     }
 }
-pub fn wait_for_input(){
+pub fn wait_for_input() {
     let mut input = String::new();
     io::stdin()
-    .read_line(&mut input)
-    .expect("failed to get input");
+        .read_line(&mut input)
+        .expect("failed to get input");
 }
