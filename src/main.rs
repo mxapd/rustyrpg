@@ -143,7 +143,7 @@ fn main() {
                             }
                         }
                         3 => {
-                            print_slowly("You look around for anything of use, but find nothing but sticks and stones..");
+                            print_slowly("");
                         }
                         _ => todo!(),
                     },
