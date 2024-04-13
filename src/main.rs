@@ -21,17 +21,16 @@ fn main() {
             loop {
                 utility::clear_console();
 
-                print_intro(&game_state);
-
-                let mut branch_aquired = false;
-                let mut torch_aquired = false;
-                let mut tree_found = false;
-
-                while !torch_aquired {
+                if !game_state.torch_aquired{
+                    print_intro(&game_state);
+                }
+                while !game_state.torch_aquired {
                     print_slowly("What will you do?\n");
                     print_slowly("[1] Inspect your supplies\n");
                     print_slowly("[2] Feel around\n");
                     print_slowly("[3] Go blindly forwards\n");
+
+                    print_slowly("[9] Save and exit.");
 
                     let mut input: String = String::new();
                     io::stdin()
@@ -47,10 +46,10 @@ fn main() {
                                 wait_for_input();
                             }
                             2 => {
-                                if tree_found {
+                                if game_state.tree_found {
                                     print_slowly("You fumble along rugged terrain, searching for anything of use, and find a large branch perfect as firewood or a makeshift torch.\n\n");
                                     wait_for_input();
-                                    branch_aquired = true;
+                                    game_state.branch_aquired = true;
                                 } else {
                                     print_slowly("You fumble along the wet, rugged terrain, searching for anything of use, but your efforts yeild naught; only moss and wet slime meet your touch.\n\n");
                                     wait_for_input();
@@ -61,15 +60,19 @@ fn main() {
                                 print_slowly("...\n");
                                 print_slowly("As you go the dampness gradually gives way to a drier, firmer terrain, and after a few minutes, your hands meet some kind of large object. As you touch it and feel what it might be, a subtle recognition dawns upon you. The rough texture beneath your fingertips, the sturdy yet yielding presence—it's unmistakably a tree.\n\n");
                                 wait_for_input();
-                                tree_found = true;
+                                game_state.tree_found = true;
+                            }
+                            9 => {
+                                save_game(&game_state);
+                                quit();
                             }
                             _ => todo!(),
                         },
                         Err(_) => println!("Invalid input. Please enter a number."),
                     }
-                    if branch_aquired {
+                    if game_state.branch_aquired {
                         print_slowly("You tear a strip of fabric from your cloak and bind it around the branch before igniting it.\n\n");
-                        torch_aquired = true;
+                        game_state.torch_aquired = true;
                     }
                 }
 
@@ -95,7 +98,7 @@ fn main() {
                 print_slowly("[1] Aproach the camp carefully, taking care to not be noticed. You dont know what awaits ahead.\n");
                 print_slowly("[2] Rush in to see if any of your friends are still alive.\n");
                 print_slowly("[3] Look around for additional options\n");
-
+                print_slowly("[9] Save and exit.");
                 let mut input: String = String::new();
                 io::stdin()
                     .read_line(&mut input)
@@ -145,6 +148,10 @@ fn main() {
                         3 => {
                             print_slowly("");
                         }
+                        9 => {
+                            save_game(&game_state);
+                            quit();
+                    }
                         _ => todo!(),
                     },
                     Err(_) => println!("Invalid input. Please enter a number."),
@@ -166,7 +173,6 @@ fn print_intro(game_state: &GameState) {
     file_contents = match &game_state.player.background {
         character::Background::Swordsman => file_contents.replace("sword", "sword"), // Modify based on the player's weapon name
         character::Background::Spearman => file_contents.replace("sword", "spear"), // Modify based on the player's weapon name
-        _ => file_contents,
     };
 
     let paragraphs: Vec<&str> = file_contents.split("\n\n").collect();
@@ -185,7 +191,8 @@ fn main_menu() -> Option<GameState> {
     let mut menu_selection = String::new();
     println!(
         r"
-    ( |-| ~|~ |-| () |\| | /\ |\|   ( |-| /? () |\| | ( |_ [-                                                                                                                                                                                                                                                                                           "
+    ( |-| ~|~ |-| () |\| | /\ |\|   ( |-| /? () |\| | ( |_ [-
+    "
     );
     println!("   1. New Game");
     println!("   2. Load Game");
@@ -203,8 +210,8 @@ fn main_menu() -> Option<GameState> {
             return Some(game_state);
         }
         2 => {
-            println!("not inplemented");
-            None
+            let game_state = load_game();
+            return Some(game_state.expect("somethign"));
         }
         3 => {
             quit();
@@ -216,6 +223,19 @@ fn main_menu() -> Option<GameState> {
         }
     }
 }
+
+fn serialize_game_state(game_state: &GameState) -> Result<String, serde_json::Error>{
+    let game_state_json = serde_json::to_string(&game_state)?;
+    println!("Game state JSON: {}", game_state_json);
+    Ok(game_state_json)
+}
+
+fn save_game(game_state: &GameState){
+    let game_state_json = serialize_game_state(&game_state).expect("error serializing");
+
+    fs::write("save.txt", game_state_json).expect("Error writing file");
+}
+
 fn new_game() -> GameState {
     utility::clear_console();
     let mut player = player_setup();
@@ -225,4 +245,9 @@ fn new_game() -> GameState {
 fn quit() {
     println!("Quitting game..");
     process::exit(0);
+}
+fn load_game()-> Result<GameState,serde_json::Error>{
+    let data = fs::read_to_string("save.txt").expect("error reading file");
+    let mut game_state: GameState = serde_json::from_str(&data)?;
+    Ok(game_state)
 }

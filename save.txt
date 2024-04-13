@@ -1,0 +1,1 @@
+{"player":{"name":"Max","background":"Swordsman","max_health":100,"health":100,"weapon_skill":1.5,"evasion":50,"favor":500,"weapon":{"name":"Dagger","description":"A sturdy dagger, useful for many things but not a very effective in combat.","damage":5},"inventory":{"items":[]}},"tree_found":true,"branch_aquired":true,"torch_aquired":true}

@@ -1,13 +1,17 @@
-#[derive(Clone)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Clone, Serialize, Deserialize)]
 pub enum Item {
     Weapon(Weapon),
 }
-#[derive(Clone)]
+
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Weapon {
     pub name: String,
     pub description: String,
     pub damage: u16,
 }
+
 impl Weapon {
     pub fn spear() -> Weapon {
         Weapon {
@@ -33,6 +37,7 @@ impl Weapon {
         }
     }
 }
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Inventory {
     items: Vec<Item>,
 }

@@ -1,9 +1,13 @@
 use crate::items::{Inventory, Weapon};
+use serde::{Serialize, Deserialize};
 
+#[derive(Serialize, Deserialize)]
 pub enum Background {
     Swordsman,
     Spearman,
 }
+
+#[derive(Serialize, Deserialize)]
 pub struct Character {
     pub name: String,
 
